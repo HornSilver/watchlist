@@ -1,7 +1,22 @@
 from flask import Flask,render_template
 from flask import escape,url_for
+from flask_sqlalchemy import SQLAlchemy
+import os
+import sys
+import click
+
+WIN = sys.platform.startswith('win')
+if WIN:  # 如果是 Windows 系统，使用三个斜线
+    prefix = 'sqlite:///'
+else:  # 否则使用四个斜线
+    prefix = 'sqlite:////'
 
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
+
+db = SQLAlchemy(app)
 
 name = 'Horn Silver'
 movies = [
@@ -16,6 +31,19 @@ movies = [
     {'title': 'WALL-E', 'year': '2008'},
     {'title': 'The Pork of Music', 'year': '2012'},
 ]
+
+class User(db.Model):
+	id = db.Column(db.Integer,primary_key=True)
+	title = db.Column(db.String(60))
+	year = db.Column(db.String(4))
+
+@app.cli.command()
+@click.option('--drop', is_flag=True, help='Create after drop')
+def initdb(drop):
+	if drop:
+		db.drop_all()
+	db.create_all()
+	click.echo('Initizlized database.')
 
 @app.route('/')
 def index():

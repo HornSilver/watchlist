@@ -3,16 +3,24 @@
 <head>
 	<meta charset="utf-8">
 	<title>{{ name }}'s Watchlist</title>
+	<link rel="icon" href="{{ url_for('static',filename='Terminal.icon') }}">
+	<link rel="stylesheet" href="{{url_for('static',filename='style.css')}}" type="text/css">
 </head>
 <body>
-	<h2>{{name}}'s Watchlist</h2>
+	<h2>
+		<img Alt="Avatar" src="{{url_for('static',filename='images/avatar.png')}}" height="100" width="100">
+		{#Alt指代图片加载不出时显示的图像#}
+		{{name}}'s Watchlist
+	</h2>
 	{# 这是一段注释123123 #}
+		
 	<p>{{ movies|length }} Titles</p>
-	<ul>
+	<ul class='movie-list'>
 		{% for movie in movies %}
 		<li>{{ movie.title }} - {{ movie.year }}</li>
 		{% endfor %}
 	</ul>
+	<img Alt="Walking Totoro" class="totoro" src="{{url_for('static',filename='images/totoro.gif')}}">
 	<footer>
 		<small>&copy; 2018 <a href="http://helloflask.com/tutorial">HelloFlask</a></small>
 	</footer>

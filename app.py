@@ -1,5 +1,5 @@
 from flask import Flask,render_template
-from flask import escape,url_for
+from flask import escape,url_for,abort,jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
 import sys
@@ -66,7 +66,8 @@ def forge():
 
 @app.route('/')
 def index():
-	return render_template('index.html',name=name,movies=movies)
+	moviedata = Movie.query.all()
+	return render_template('index.html',movies=moviedata)
 
 @app.route('/home')
 def hello():
@@ -78,9 +79,16 @@ def user_page(name):
 
 @app.route('/test')
 def test_url_for():
-	print(url_for('hello'))
-	print(url_for('user_page', name='Horn'))
-	print(url_for('user_page', name='Silver'))
-	print(url_for('test_url_for'))
-	print(url_for('test_url_for',num1=2))
-	return 'Test page'
+
+	abort(404)
+	return 12
+
+@app.errorhandler(404)
+def page_not_found(error):
+	
+	return render_template('404.html'), 404
+
+@app.context_processor
+def inject_user():
+	user = User.query.get(2)
+	return dict(user=user)

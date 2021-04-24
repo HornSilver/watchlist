@@ -1,5 +1,4 @@
-from flask import Flask,render_template
-from flask import escape,url_for,abort,jsonify
+from flask import Flask,render_template,escape,url_for,abort,jsonify,request,flash,redirect
 from flask_sqlalchemy import SQLAlchemy
 import os
 import sys
@@ -15,6 +14,7 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
+app.config['SECRET_KEY'] = 'dev'
 
 db = SQLAlchemy(app)
 
@@ -64,8 +64,21 @@ def forge():
 	db.session.commit()
 	click.echo("Done!")
 
-@app.route('/')
+@app.route('/', methods=['GET','POST'])
 def index():
+	if request.method == 'POST':
+		title = request.values.get('title')
+		year = request.form.get('year')
+
+		if not title or not year or len(year) > 4 or len(title) > 60:
+			flash('Invaild input')
+			return redirect(url_for('index'))
+
+		movie = Movie(title=title,year=year)
+		db.session.add(movie)
+		db.session.commit()
+		flash('Item created.')
+		return redirect(url_for('index'))
 	moviedata = Movie.query.all()
 	return render_template('index.html',movies=moviedata)
 
@@ -84,6 +97,7 @@ def test_url_for():
 	return 12
 
 @app.errorhandler(404)
+@app.errorhandler(405)
 def page_not_found(error):
 	
 	return render_template('404.html'), 404

@@ -4,15 +4,16 @@ import os
 import sys
 import click
 
-WIN = sys.platform.startswith('win')
-if WIN:  # 如果是 Windows 系统，使用三个斜线
-    prefix = 'sqlite:///'
-else:  # 否则使用四个斜线
-    prefix = 'sqlite:////'
+# WIN = sys.platform.startswith('win')
+# if WIN:  # 如果是 Windows 系统，使用三个斜线
+#     prefix = 'sqlite:///'
+# else:  # 否则使用四个斜线
+#     prefix = 'sqlite:////'
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
+# app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Ww15888706328@sh-cynosdbmysql-grp-04gwt8ts.sql.tencentcdb.com:29073/base_data'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭对模型修改的监控
 app.config['SECRET_KEY'] = 'dev'
 

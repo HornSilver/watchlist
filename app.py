@@ -105,7 +105,7 @@ def page_not_found(error):
 
 @app.context_processor
 def inject_user():
-	user = User.query.get(2)
+	user = User.query.get(1)
 	return dict(user=user)
 
 @app.route('/movie/edit/<int:movie_id>', methods=['GET','POST'])
